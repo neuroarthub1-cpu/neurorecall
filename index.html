@@ -264,17 +264,13 @@ input[type=range]{width:100%;accent-color:var(--blue)}
   place-items:center;
 }
 .iso-svg{width:100%;height:100%;overflow:visible;touch-action:manipulation}
-.iso-cube{cursor:pointer;stroke:#8ba4c4;stroke-width:1.5}
+.iso-cube{cursor:pointer;stroke:#8ba4c4;stroke-width:1.25;stroke-linejoin:round}
 .iso-cube .top{fill:#496785}
-.iso-cube .left{fill:#29435f}
-.iso-cube .right{fill:#365675}
-.iso-cube.lit .top{fill:#a7fff2}
-.iso-cube.lit .left{fill:#35a9a8}
-.iso-cube.lit .right{fill:#4bc9c0}
+.iso-cube .side{fill:#29435f}
+.iso-cube.lit{filter:brightness(1.85);stroke:#d7fffb;stroke-width:2.2}
 .iso-cube.selected .top{fill:#8bc7ff}
-.iso-cube.selected .left{fill:#3478ba}
-.iso-cube.selected .right{fill:#4b94d8}
-.iso-cube.wrong .top,.iso-cube.wrong .left,.iso-cube.wrong .right{fill:#bd4c5a}
+.iso-cube.selected .side{fill:#3478ba}
+.iso-cube.wrong .top,.iso-cube.wrong .side{fill:#bd4c5a}
 .submit-spatial{
   position:absolute;bottom:35px;left:50%;
   transform:translateX(-50%);z-index:6;
@@ -407,8 +403,7 @@ input[type=range]{width:100%;accent-color:var(--blue)}
       <div class="card-body">
         <h3>01 · Sequence Memory</h3>
         <p>
-          Remember a sequence of stimuli and reproduce it in the correct order.
-          Includes forward, reverse and updating tasks.
+          Remember a sequence of stimuli and reproduce it in the same or reverse order.
         </p>
         <div class="tags">
           <span class="tag">Sequential memory</span>
@@ -442,8 +437,7 @@ input[type=range]{width:100%;accent-color:var(--blue)}
       <div class="card-body">
         <h3>02 · Spatial Memory</h3>
         <p>
-          Remember locations and reconstruct spatial arrangements.
-          Choose between a flat 2D grid and a three-dimensional block field.
+          Remember and reconstruct spatial arrangements in a 2D grid or 3D shape field.
         </p>
         <div class="tags">
           <span class="tag">Location memory</span>
@@ -472,10 +466,9 @@ input[type=range]{width:100%;accent-color:var(--blue)}
         </svg>
       </div>
       <div class="card-body">
-        <h3>03 · Memory Recall</h3>
+        <h3>03 · Recognition & Association</h3>
         <p>
-          Study pictures or words, then identify previously learned items.
-          Includes recognition and associative matching.
+          Recognise previously presented pictures or match related picture pairs.
         </p>
         <div class="tags">
           <span class="tag">Recognition</span>
@@ -507,7 +500,7 @@ input[type=range]{width:100%;accent-color:var(--blue)}
     <div class="panel">
       <div class="field-grid">
 
-        <div class="field">
+        <div class="field" id="modeField">
           <label for="modeSelect">Training mode</label>
           <select id="modeSelect"></select>
           <div class="helper" id="modeHelp"></div>
@@ -551,27 +544,30 @@ input[type=range]{width:100%;accent-color:var(--blue)}
         <summary>Advanced clinician settings (optional)</summary>
         <div class="advanced-grid">
           <div class="field">
-            <label for="delaySelect">Additional recall delay</label>
-            <select id="delaySelect">
-              <option value="0">No additional delay</option>
-              <option value="2">2 seconds</option>
-              <option value="5">5 seconds</option>
-              <option value="10">10 seconds</option>
+            <label for="retentionToggle">Retention interval</label>
+            <select id="retentionToggle">
+              <option value="off" selected>OFF · Immediate recall</option>
+              <option value="on">ON · Delayed recall</option>
+            </select>
+          </div>
+          <div class="field" id="retentionDurationField">
+            <label for="retentionDuration">Retention duration</label>
+            <select id="retentionDuration">
+              <option value="3">3 seconds</option><option value="5" selected>5 seconds</option>
+              <option value="10">10 seconds</option><option value="15">15 seconds</option>
+              <option value="30">30 seconds</option><option value="60">60 seconds</option>
             </select>
           </div>
           <div class="field">
-            <label for="paceSelect">Presentation pace</label>
-            <select id="paceSelect">
-              <option value="auto">Automatic · level-based</option>
-              <option value="slow">Slower</option>
-              <option value="fast">Faster</option>
+            <label for="speedSelect">Stimulus speed</label>
+            <select id="speedSelect">
+              <option value="0.5">0.5× · Very slow</option><option value="0.75">0.75× · Slow</option>
+              <option value="1" selected>1.0× · Normal</option><option value="1.25">1.25× · Moderately fast</option>
+              <option value="1.5">1.5× · Fast</option><option value="2">2.0× · Very fast</option>
             </select>
           </div>
         </div>
-        <p class="helper">
-          These optional settings override timing parameters. The selected challenge
-          level remains unchanged.
-        </p>
+        <p class="helper">Retention controls the time between stimulus removal and recall. Stimulus speed changes presentation timing only: sequence flash and gap, spatial display time, or picture study time. It does not change the Level 0–8 memory challenge.</p>
       </details>
 
       <div class="setup-actions">
@@ -704,67 +700,17 @@ const views = [
 ];
 
 const GAME = {
-  sequence:{
-    title:"Sequence Memory",
-    modes:{
-      forward:{
-        label:"Forward sequence",
-        help:"Remember and reproduce the sequence in the same order."
-      },
-      reverse:{
-        label:"Reverse sequence",
-        help:"Remember the sequence, then reproduce it in reverse order."
-      },
-      updating:{
-        label:"Updating memory",
-        help:"Track a changing stream and reproduce only the most recent items."
-      },
-      delayed:{
-        label:"Delayed sequence",
-        help:"Remember the sequence, wait, then reproduce it."
-      }
-    }
-  },
-
-  spatial:{
-    title:"Spatial Memory",
-    modes:{
-      location:{
-        label:"Location recall",
-        help:"Remember the highlighted positions and select the same locations."
-      },
-      pattern:{
-        label:"Pattern recall",
-        help:"Remember the overall spatial arrangement and reconstruct it."
-      },
-      delayed:{
-        label:"Delayed spatial recall",
-        help:"Remember the highlighted locations across a retention interval."
-      }
-    }
-  },
-
-  recall:{
-    title:"Memory Recall",
-    modes:{
-      picture:{
-        label:"Picture recognition",
-        help:"Study pictures and identify the previously seen pictures."
-      },
-      word:{
-        label:"Word recognition",
-        help:"Study words and identify the previously seen words."
-      },
-      association:{
-        label:"Associative matching",
-        help:"Find matching pairs while remembering their locations."
-      },
-      delayed:{
-        label:"Delayed recognition",
-        help:"Study items, wait through a retention interval, then recognise them."
-      }
-    }
-  }
+  sequence:{title:"Sequence Memory",modes:{
+    forward:{label:"Forward",help:"Remember the sequence and reproduce it in the same order."},
+    reverse:{label:"Reverse",help:"Remember the sequence and reproduce it from last to first."}
+  }},
+  spatial:{title:"Spatial Memory",modes:{
+    spatial:{label:"Spatial reconstruction",help:"Remember the highlighted positions and reconstruct the complete arrangement."}
+  }},
+  recall:{title:"Recognition & Association",modes:{
+    recognition:{label:"Recognition",help:"Study pictures, then identify the pictures you saw among new pictures."},
+    association:{label:"Association",help:"Study related picture pairs, then find the matching pairs."}
+  }}
 };
 
 const WORDS = [
@@ -781,11 +727,20 @@ const EMOJI = [
   "🍇","🪁","🐢","🌈","🌵","🎯","🦉","🍉","🛶","🎨"
 ];
 
+const ASSOCIATIONS = [
+  ["🔑","🔒"],["🐝","🌼"],["🐟","🌊"],["🌙","⭐"],
+  ["✏️","📓"],["☂️","🌧️"],["🧦","👟"],["🖌️","🎨"],
+  ["🚗","🛣️"],["🍞","🧈"],["🪥","🦷"],["🧤","❄️"]
+];
+
 let selectedGame = "sequence";
 let config = {};
 let session = null;
 let timerId = null;
 let phaseTimer = null;
+let phaseDueAt = 0;
+let phaseCallback = null;
+let phaseRemaining = 0;
 let paused = false;
 let practiceMode = false;
 let gameState = {};
@@ -838,26 +793,56 @@ function clamp(n,min,max){
 */
 function levelParams(level){
   return {
-    sequenceLength:clamp(2+Math.floor(level*0.8),2,9),
-    presentationInterval:Math.max(420,1250-level*95),
+    sequenceLength:clamp(3+Math.floor(level*.75),3,9),
+    presentationInterval:Math.max(500,1250-level*85),
     gridSize:clamp(3+Math.floor(level/2),3,7),
-    exposure:Math.max(650,2600-level*220),
-    retention:Math.round(level*0.55),
-    recallItems:clamp(3+Math.floor(level*0.65),3,8),
-    distractors:clamp(2+Math.floor(level*0.5),2,7),
-    pairCount:clamp(2+Math.floor(level*0.55),2,8)
+    exposure:Math.max(700,2600-level*210),
+    recallItems:clamp(3+Math.floor(level*.65),3,8),
+    distractors:clamp(2+Math.floor(level*.5),2,7),
+    pairCount:clamp(2+Math.floor(level*.55),2,7)
   };
 }
-
-function paceFactor(){
-  if(config.pace==="slow") return 1.3;
-  if(config.pace==="fast") return 0.75;
-  return 1;
-}
+function speedFactor(){return Number(config.stimulusSpeed||1);}
+function retentionMilliseconds(){return config.retentionEnabled?config.retentionSeconds*1000:350;}
+function retentionPrompt(){return config.retentionEnabled?`Retention interval · ${config.retentionSeconds} seconds`:"Get ready to respond";}
 
 function clearTimers(){
   clearTimeout(phaseTimer);
   phaseTimer=null;
+  phaseDueAt=0;
+  phaseCallback=null;
+  phaseRemaining=0;
+}
+
+function schedulePhase(callback,delay){
+  clearTimeout(phaseTimer);
+  phaseCallback=callback;
+  phaseRemaining=Math.max(0,delay);
+  phaseDueAt=Date.now()+phaseRemaining;
+  phaseTimer=setTimeout(()=>{
+    phaseTimer=null;
+    phaseCallback=null;
+    phaseRemaining=0;
+    phaseDueAt=0;
+    callback();
+  },phaseRemaining);
+  return phaseTimer;
+}
+
+function pausePhaseTimer(){
+  if(phaseTimer!==null){
+    clearTimeout(phaseTimer);
+    phaseRemaining=Math.max(0,phaseDueAt-Date.now());
+    phaseTimer=null;
+  }
+}
+
+function resumePhaseTimer(){
+  if(phaseCallback){
+    const callback=phaseCallback;
+    const remaining=phaseRemaining;
+    schedulePhase(callback,remaining);
+  }
 }
 
 function clearAllTimers(){
@@ -882,90 +867,37 @@ function clearDynamic(){
 function setupGame(game){
   selectedGame=game;
   $("setupTitle").textContent=GAME[game].title;
-
-  $("modeSelect").innerHTML=Object.entries(GAME[game].modes)
-    .map(([key,mode])=>`<option value="${key}">${mode.label}</option>`)
-    .join("");
-
+  $("modeSelect").innerHTML=Object.entries(GAME[game].modes).map(([key,mode])=>`<option value="${key}">${mode.label}</option>`).join("");
   $("modeHelp").textContent=Object.values(GAME[game].modes)[0].help;
-
-  $("modeSelect").onchange=()=>{
-    $("modeHelp").textContent=
-      GAME[game].modes[$("modeSelect").value].help;
-  };
-
+  $("modeSelect").onchange=()=>{$("modeHelp").textContent=GAME[game].modes[$("modeSelect").value].help;};
+  $("modeField").classList.toggle("hidden",game==="spatial");
   $("orientationField").classList.toggle("hidden",game!=="spatial");
-
-  $("levelRange").value=3;
-  $("levelValue").textContent="3";
-
+  $("levelRange").value=3; $("levelValue").textContent="3";
+  $("retentionToggle").value="off"; $("retentionDuration").value="5";
+  $("retentionDuration").disabled=true; $("retentionDurationField").style.opacity=".55";
+  $("speedSelect").value="1";
   showView("setupView");
 }
-
 function readConfig(){
-  config={
-    game:selectedGame,
-    mode:$("modeSelect").value,
-    level:Number($("levelRange").value),
-    duration:Number($("durationSelect").value),
-    orientation:$("orientationSelect").value,
-    extraDelay:Number($("delaySelect").value),
-    pace:$("paceSelect").value
-  };
+  config={game:selectedGame,mode:$("modeSelect").value,level:Number($("levelRange").value),
+    duration:Number($("durationSelect").value),orientation:$("orientationSelect").value,
+    retentionEnabled:$("retentionToggle").value==="on",retentionSeconds:Number($("retentionDuration").value),
+    stimulusSpeed:Number($("speedSelect").value)};
 }
-
 function modeLabel(){
+  if(config.game==="spatial") return config.orientation.toUpperCase()+" spatial reconstruction";
   return GAME[config.game].modes[config.mode].label;
 }
-
 function instructionMarkup(){
-  if(config.game==="sequence"){
-    const explanations={
-      forward:"Reproduce the illuminated buttons in exactly the same order.",
-      reverse:"After watching, enter the sequence from last to first.",
-      updating:"Watch the stream. At the end, reproduce only the most recent items in their original order.",
-      delayed:"After the sequence disappears, wait for the cue before reproducing it."
-    };
-
-    return `
-      <p>Four large coloured buttons will illuminate one at a time.
-      Watch carefully and remember the order.</p>
-      <p>${explanations[config.mode]}</p>
-      <p>Tap the buttons to enter your answer. Complete the sequence to finish the round.</p>
-    `;
-  }
-
+  if(config.game==="sequence") return `<p>Four large coloured buttons will illuminate one at a time. Watch carefully and remember their order.</p>
+    <p>${config.mode==="reverse"?"REVERSE: Tap the buttons in the opposite order, starting with the last stimulus you saw.":"FORWARD: Tap the buttons in exactly the same order as they appeared."}</p>
+    <p>Every flash has a visible dark interval before the next flash, including repeated colours.</p>`;
   if(config.game==="spatial"){
-    const orientation=config.orientation==="3d"
-      ? "An isometric three-dimensional field of blocks will appear. Remember the highlighted blocks and their positions across the different layers."
-      : "A square grid will appear. Remember which cells are highlighted and where they are located.";
-
-    const task={
-      location:"Select the same locations that were highlighted.",
-      pattern:"Reconstruct the complete spatial pattern.",
-      delayed:"Reconstruct the locations after the retention interval."
-    };
-
-    return `
-      <p>${orientation}</p>
-      <p>${task[config.mode]}</p>
-      <p>Select the remembered locations and press Submit pattern when finished.</p>
-    `;
+    const detail=config.orientation==="3d"?"A three-dimensional field of geometric prisms will appear. Remember the highlighted positions and reconstruct the same arrangement. Shape complexity and the number of highlighted positions increase with level.":"A square grid will appear with several highlighted positions. Remember the complete arrangement and select those same positions after it disappears.";
+    return `<p>${detail}</p><p>Select every remembered position, then press Submit pattern.</p>`;
   }
-
-  if(config.mode==="association"){
-    return `
-      <p>Cards are arranged face down. Turn over two cards at a time and find the matching pairs.</p>
-      <p>Remember both the item and its location. A successful pair remains visible.</p>
-    `;
-  }
-
-  const word=config.mode==="word";
-  return `
-    <p>First, study a set of ${word?"words":"pictures"}. The items will then disappear.</p>
-    <p>After the retention interval, a larger set will appear. Select only the items that were shown during the study phase.</p>
-    <p>Some alternatives are new distractors. Avoid selecting items that were not part of the original set.</p>
-  `;
+  if(config.mode==="association") return `<p>First, study the related picture pairs. The pictures will disappear. Then turn over two cards at a time to find the matching pairs.</p><p>Remember both the picture and its location.</p>`;
+  return `<p>Study the pictures presented on screen. They will disappear, followed by a set containing previously seen pictures and new pictures.</p><p>Select all the pictures that appeared in the study phase, then press Submit answers.</p>`;
 }
 
 function showInstructions(){
@@ -1053,7 +985,9 @@ function createSession(isPractice){
   $("liveSub").textContent=
     (practiceMode?"PRACTICE · ":"")+
     `Level ${config.level} · ${modeLabel()}`+
-    (config.game==="spatial"?" · "+config.orientation.toUpperCase():"");
+    (config.game==="spatial"?" · "+config.orientation.toUpperCase():"")+
+    (config.retentionEnabled?" · Retention "+config.retentionSeconds+"s":" · Immediate recall")+
+    " · Speed "+config.stimulusSpeed+"×";
 
   $("correctMetric").textContent="0";
   $("errorMetric").textContent="0";
@@ -1083,7 +1017,7 @@ function completeRound(){
   session.rounds++;
   updateMetrics();
 
-  phaseTimer=setTimeout(()=>{
+  phaseTimer=schedulePhase(()=>{
     if(session && !paused) startRound();
   },700);
 }
@@ -1092,87 +1026,38 @@ function completeRound(){
 
 function sequenceRound(){
   const p=levelParams(config.level);
-  const mode=config.mode;
-
-  const len=p.sequenceLength+
-    (mode==="updating"?1:0);
-
-  const streamLength=mode==="updating"?len+2:len;
-  const stream=Array.from({length:streamLength},()=>rand(4));
-
-  let expected=stream.slice();
-
-  if(mode==="reverse") expected=stream.slice().reverse();
-  if(mode==="updating") expected=stream.slice(-len);
-
-  gameState={
-    stream,
-    expected,
-    input:[],
-    phase:"watch",
-    started:0
-  };
-
-  const board=document.createElement("div");
-  board.className="big-buttons dynamic";
-
+  const stream=Array.from({length:p.sequenceLength},()=>rand(4));
+  const expected=config.mode==="reverse"?stream.slice().reverse():stream.slice();
+  gameState={stream,expected,input:[],phase:"watch",started:0};
+  const board=document.createElement("div"); board.className="big-buttons dynamic";
   const names=["Red","Blue","Green","Yellow"];
-
   for(let i=0;i<4;i++){
-    const button=document.createElement("button");
-    button.className="seq-button c"+i;
-    button.setAttribute("aria-label",names[i]);
-    button.disabled=true;
-    button.addEventListener("click",()=>sequenceInput(i));
-    board.appendChild(button);
+    const button=document.createElement("button"); button.className="seq-button c"+i;
+    button.setAttribute("aria-label",names[i]); button.disabled=true;
+    button.addEventListener("click",()=>sequenceInput(i)); board.appendChild(button);
   }
-
-  $("stageInner").appendChild(board);
-
-  setFeedback("");
-  setPrompt(mode==="updating"
-    ?"Watch the stream and remember the final items"
-    :"Watch and remember the sequence");
-
+  $("stageInner").appendChild(board); setFeedback("");
+  setPrompt(config.mode==="reverse"?"Watch carefully · remember the sequence backward":"Watch and remember the sequence");
   const buttons=[...board.children];
-  const interval=p.presentationInterval*paceFactor();
+  const cycle=Math.max(260,p.presentationInterval/speedFactor());
+  const onDuration=clamp(cycle*.62,150,500), offDuration=Math.max(110,cycle-onDuration);
   let index=0;
-
   function flashNext(){
-    if(!session || paused) return;
-
+    if(!session||paused)return;
     if(index>=stream.length){
-      buttons.forEach(b=>b.classList.remove("lit"));
-
-      const wait=
-        (mode==="delayed"?Math.max(1000,p.retention*1000):450)+
-        config.extraDelay*1000;
-
-      setPrompt(mode==="delayed"
-        ?"Wait, then reproduce the sequence"
-        :"Now reproduce the sequence");
-
-      phaseTimer=setTimeout(()=>{
-        if(!session || paused) return;
-
-        gameState.phase="input";
-        gameState.started=Date.now();
-
+      buttons.forEach(b=>b.classList.remove("lit")); setPrompt(retentionPrompt());
+      phaseTimer=schedulePhase(()=>{
+        if(!session||paused)return;
+        gameState.phase="input"; gameState.started=Date.now();
         buttons.forEach(b=>b.disabled=false);
-        setPrompt("Enter the sequence");
-      },wait);
-
-      return;
+        setPrompt(config.mode==="reverse"?"Enter the sequence from LAST to FIRST":"Enter the sequence in the SAME order");
+      },retentionMilliseconds()); return;
     }
-
     buttons.forEach(b=>b.classList.remove("lit"));
-    buttons[stream[index]].classList.add("lit");
-    index++;
-
-    phaseTimer=setTimeout(flashNext,interval);
+    const active=buttons[stream[index++]]; active.classList.add("lit");
+    phaseTimer=schedulePhase(()=>{active.classList.remove("lit");phaseTimer=schedulePhase(flashNext,offDuration);},onDuration);
   }
-
-  phaseTimer=setTimeout(flashNext,450);
+  phaseTimer=schedulePhase(flashNext,400);
 }
 
 function sequenceInput(value){
@@ -1188,8 +1073,11 @@ function sequenceInput(value){
     session.errors++;
     setFeedback("Incorrect position","var(--red)");
   }else{
+    session.correct++;
     setFeedback("Correct position","var(--green)");
   }
+
+  updateMetrics();
 
   if(gameState.input.length>=gameState.expected.length){
     const correct=gameState.input.every(
@@ -1197,7 +1085,6 @@ function sequenceInput(value){
     );
 
     if(correct){
-      session.correct++;
       setFeedback("Correct sequence","var(--green)");
     }else{
       setFeedback("Sequence completed","var(--yellow)");
@@ -1223,75 +1110,29 @@ function sequenceInput(value){
 /* GAME 2 — SPATIAL MEMORY */
 
 function spatialRound(){
-  const p=levelParams(config.level);
-  const size=p.gridSize;
-  const is3D=config.orientation==="3d";
-
+  const p=levelParams(config.level), size=p.gridSize, is3D=config.orientation==="3d";
   const total=is3D?27:size*size;
-  const count=clamp(
-    2+Math.floor(config.level*.7)+
-    (config.mode==="pattern"?1:0),
-    2,
-    Math.min(14,total-1)
-  );
-
-  const targets=shuffle(
-    Array.from({length:total},(_,i)=>i)
-  ).slice(0,count);
-
-  gameState={
-    targets,
-    selected:[],
-    phase:"study",
-    started:0,
-    size,
-    total
-  };
-
-  const board=is3D
-    ?make3DBoard()
-    :make2DBoard(size,total);
-
-  board.classList.add("dynamic");
-  $("stageInner").appendChild(board);
-
+  const threeDCounts=[3,4,4,5,5,6,6,7,8];
+  const count=is3D?threeDCounts[config.level]:clamp(3+config.level,3,Math.min(11,total-1));
+  const targets=shuffle(Array.from({length:total},(_,i)=>i)).slice(0,count);
+  gameState={targets,selected:[],phase:"study",started:0,size,total};
+  const board=is3D?make3DBoard():make2DBoard(size,total);
+  board.classList.add("dynamic"); $("stageInner").appendChild(board);
   const cells=[...board.querySelectorAll("[data-index]")];
-
-  targets.forEach(index=>{
-    if(cells[index]) cells[index].classList.add("lit");
-  });
-
-  setFeedback("");
-  setPrompt("Study the highlighted locations");
-
-  const exposure=p.exposure/paceFactor();
-
-  phaseTimer=setTimeout(()=>{
-    if(!session || paused) return;
-
-    cells.forEach(cell=>cell.classList.remove("lit"));
-
-    const wait=
-      (config.mode==="delayed"
-        ?Math.max(1000,p.retention*1000)
-        :350)+config.extraDelay*1000;
-
-    setPrompt(config.mode==="delayed"
-      ?"Wait, then reconstruct the pattern"
-      :"Select the remembered locations");
-
-    phaseTimer=setTimeout(()=>{
-      if(!session || paused) return;
-
-      gameState.phase="input";
-      gameState.started=Date.now();
-
-      setPrompt("Select the remembered locations");
-      addSpatialSubmitButton();
-    },wait);
-
-  },exposure);
+  targets.forEach(index=>{if(cells[index])cells[index].classList.add("lit");});
+  setFeedback(""); setPrompt("Study the complete spatial arrangement");
+  phaseTimer=schedulePhase(()=>{
+    if(!session||paused)return;
+    cells.forEach(cell=>cell.classList.remove("lit")); setPrompt(retentionPrompt());
+    phaseTimer=schedulePhase(()=>{
+      if(!session||paused)return;
+      gameState.phase="input"; gameState.started=Date.now();
+      setPrompt("Reconstruct the complete arrangement"); addSpatialSubmitButton();
+    },retentionMilliseconds());
+  },p.exposure/speedFactor());
 }
+
+
 
 function make2DBoard(size,total){
   const board=document.createElement("div");
@@ -1311,88 +1152,48 @@ function make2DBoard(size,total){
 }
 
 function make3DBoard(){
-  const wrap=document.createElement("div");
-  wrap.className="iso-wrap";
-
-  const svg=document.createElementNS(
-    "http://www.w3.org/2000/svg","svg"
-  );
-
-  svg.setAttribute("viewBox","0 0 760 560");
-  svg.setAttribute("preserveAspectRatio","xMidYMid meet");
-  svg.classList.add("iso-svg");
-
-  const cubeW=48;
-  const cubeH=28;
-  const baseX=380;
-  const baseY=125;
-  const cols=3;
-  const rows=3;
-  const layers=3;
-
-  let index=0;
-
-  /* Three layers of selectable cube positions.
-     Each cube has a unique index for recall scoring. */
-
-  for(let z=0;z<layers;z++){
-    for(let r=0;r<rows;r++){
-      for(let c=0;c<cols;c++){
-
-        const x=baseX+(c-r)*cubeW*.9;
-        const y=baseY+(c+r)*cubeH*.72-z*cubeH*1.7;
-
-        const group=document.createElementNS(
-          "http://www.w3.org/2000/svg","g"
-        );
-
-        group.setAttribute("class","iso-cube");
-        group.dataset.index=index;
-        group.setAttribute("role","button");
-        group.setAttribute("aria-label",`Block ${index+1}`);
-
-        const top=document.createElementNS(
-          "http://www.w3.org/2000/svg","polygon"
-        );
-        top.setAttribute("class","top");
-        top.setAttribute(
-          "points",
-          `${x},${y} ${x+cubeW*.9},${y+cubeH*.72} ${x},${y+cubeH*1.44} ${x-cubeW*.9},${y+cubeH*.72}`
-        );
-
-        const left=document.createElementNS(
-          "http://www.w3.org/2000/svg","polygon"
-        );
-        left.setAttribute("class","left");
-        left.setAttribute(
-          "points",
-          `${x-cubeW*.9},${y+cubeH*.72} ${x},${y+cubeH*1.44} ${x},${y+cubeH*2.75} ${x-cubeW*.9},${y+cubeH*2.03}`
-        );
-
-        const right=document.createElementNS(
-          "http://www.w3.org/2000/svg","polygon"
-        );
-        right.setAttribute("class","right");
-        right.setAttribute(
-          "points",
-          `${x},${y+cubeH*1.44} ${x+cubeW*.9},${y+cubeH*.72} ${x+cubeW*.9},${y+cubeH*2.03} ${x},${y+cubeH*2.75}`
-        );
-
-        group.append(top,left,right);
-
-        const thisIndex=index;
-        group.addEventListener("click",()=>{
-          spatialSelect(thisIndex,group);
-        });
-
-        svg.appendChild(group);
-        index++;
+  const wrap=document.createElement("div"); wrap.className="iso-wrap";
+  const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  svg.setAttribute("viewBox","0 0 760 560"); svg.setAttribute("preserveAspectRatio","xMidYMid meet"); svg.classList.add("iso-svg");
+  const baseX=380,baseY=150,stepX=58,stepY=34,depth=54,level=config.level;
+  const baseSides=level<=1?4:level<=3?5:level<=5?6:8;
+  const shapeNames={4:"cube",5:"pentagonal prism",6:"hexagonal prism",8:"octagonal prism"};
+  function makePrism(index,x,y,sides){
+    const group=document.createElementNS("http://www.w3.org/2000/svg","g");
+    group.setAttribute("class","iso-cube"); group.dataset.index=index;
+    group.setAttribute("role","button"); group.setAttribute("tabindex","0");
+    group.setAttribute("aria-label",`${shapeNames[sides]} ${index+1}`);
+    const top=document.createElementNS("http://www.w3.org/2000/svg","polygon");
+    if(sides===4){
+      const topPts=`${x},${y} ${x+22},${y+14} ${x},${y+28} ${x-22},${y+14}`;
+      const left=document.createElementNS("http://www.w3.org/2000/svg","polygon");
+      left.setAttribute("class","side");left.setAttribute("points",`${x-22},${y+14} ${x},${y+28} ${x},${y+53} ${x-22},${y+39}`);left.setAttribute("fill","#29435f");group.appendChild(left);
+      const right=document.createElementNS("http://www.w3.org/2000/svg","polygon");
+      right.setAttribute("class","side");right.setAttribute("points",`${x},${y+28} ${x+22},${y+14} ${x+22},${y+39} ${x},${y+53}`);right.setAttribute("fill","#365675");group.appendChild(right);
+      top.setAttribute("points",topPts);
+    }else{
+      const radius=22,height=25,pts=[];
+      for(let i=0;i<sides;i++){const a=-Math.PI/2+2*Math.PI*i/sides;pts.push([x+Math.cos(a)*radius,y+Math.sin(a)*radius*.62]);}
+      for(let i=0;i<sides;i++){
+        const a=pts[i],b=pts[(i+1)%sides],face=document.createElementNS("http://www.w3.org/2000/svg","polygon");
+        face.setAttribute("class","side");face.setAttribute("points",`${a[0]},${a[1]} ${b[0]},${b[1]} ${b[0]},${b[1]+height} ${a[0]},${a[1]+height}`);
+        face.setAttribute("fill",i%2===0?"#365675":"#29435f");group.appendChild(face);
       }
+      top.setAttribute("points",pts.map(point=>point.join(",")).join(" "));
     }
+    top.setAttribute("class","top");group.appendChild(top);
+    group.addEventListener("click",()=>spatialSelect(index,group));
+    group.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();spatialSelect(index,group);}});
+    return group;
   }
-
-  wrap.appendChild(svg);
-  return wrap;
+  let index=0;
+  for(let z=0;z<3;z++)for(let r=0;r<3;r++)for(let c=0;c<3;c++){
+    const x=baseX+(c-r)*stepX,y=baseY+(c+r)*stepY-z*depth;
+    let sides=baseSides;
+    if(level===8){const choices=[4,5,6,8];sides=choices[(index+Math.floor(index/3))%choices.length];}
+    svg.appendChild(makePrism(index++,x,y,sides));
+  }
+  wrap.appendChild(svg); return wrap;
 }
 
 function addSpatialSubmitButton(){
@@ -1408,20 +1209,10 @@ function addSpatialSubmitButton(){
 
 function spatialSelect(index,element){
   if(!session || paused || gameState.phase!=="input") return;
-
   const position=gameState.selected.indexOf(index);
-
-  if(position>=0){
-    gameState.selected.splice(position,1);
-    element.classList.remove("selected");
-  }else{
-    gameState.selected.push(index);
-    element.classList.add("selected");
-  }
-
-  setFeedback(
-    `${gameState.selected.length} locations selected`
-  );
+  if(position>=0){gameState.selected.splice(position,1);element.classList.remove("selected");}
+  else{gameState.selected.push(index);element.classList.add("selected");}
+  setFeedback(`${gameState.selected.length} locations selected`);
 }
 
 function submitSpatial(){
@@ -1479,66 +1270,22 @@ function recallRound(){
 }
 
 function recognitionRound(){
-  const p=levelParams(config.level);
-  const wordMode=config.mode==="word";
-  const targetCount=p.recallItems;
-  const distractorCount=p.distractors;
-
-  const pool=getItems(targetCount+distractorCount,wordMode);
-  const learned=pool.slice(0,targetCount);
-  const distractors=pool.slice(targetCount);
+  const p=levelParams(config.level),targetCount=p.recallItems,distractorCount=p.distractors;
+  const pool=getItems(targetCount+distractorCount,false),learned=pool.slice(0,targetCount),distractors=pool.slice(targetCount);
   const choices=shuffle([...learned,...distractors]);
-
-  gameState={
-    learned,
-    choices,
-    selected:[],
-    phase:"study",
-    wordMode,
-    started:0,
-    falseSelections:0
-  };
-
-  const board=document.createElement("div");
-  board.className="card-board dynamic";
-
-  learned.forEach(item=>{
-    board.appendChild(makeStudyCard(item,wordMode));
-  });
-
-  $("stageInner").appendChild(board);
-
-  setFeedback("");
-  setPrompt("Study these items");
-
-  const exposure=p.exposure*1.15/paceFactor();
-
-  phaseTimer=setTimeout(()=>{
-    if(!session || paused) return;
-
-    board.innerHTML="";
-
-    const wait=
-      (config.mode==="delayed"
-        ?Math.max(1000,p.retention*1000)
-        :450)+config.extraDelay*1000;
-
-    setPrompt(config.mode==="delayed"
-      ?"Retention interval"
-      :"Select the items you studied");
-
-    phaseTimer=setTimeout(()=>{
-      if(!session || paused) return;
-
-      gameState.phase="input";
-      gameState.started=Date.now();
-
-      renderRecognitionChoices(board);
-      setPrompt("Select all items from the study phase");
-
-    },wait);
-
-  },exposure);
+  gameState={learned,choices,selected:[],phase:"study",wordMode:false,started:0,falseSelections:0};
+  const board=document.createElement("div");board.className="card-board dynamic";
+  learned.forEach(item=>board.appendChild(makeStudyCard(item,false)));
+  $("stageInner").appendChild(board);setFeedback("");setPrompt("Study these pictures");
+  phaseTimer=schedulePhase(()=>{
+    if(!session||paused)return;
+    board.innerHTML="";setPrompt(retentionPrompt());
+    phaseTimer=schedulePhase(()=>{
+      if(!session||paused)return;
+      gameState.phase="input";gameState.started=Date.now();
+      renderRecognitionChoices(board);setPrompt("Select all pictures from the study phase");
+    },retentionMilliseconds());
+  },p.exposure*1.15/speedFactor());
 }
 
 function makeStudyCard(item,wordMode){
@@ -1587,12 +1334,20 @@ function addRecognitionSubmitButton(){
 
 function recognitionSelect(item,card){
   if(!session || paused || gameState.phase!=="input") return;
-  if(card.classList.contains("revealed")) return;
 
-  card.classList.add("revealed");
+  // Tapping a selected card again removes it from the answer set.
+  const selectedIndex=gameState.selected.indexOf(item.id);
+
+  if(selectedIndex>=0){
+    gameState.selected.splice(selectedIndex,1);
+    card.classList.remove("revealed");
+    card.style.borderColor="";
+    setFeedback(`${gameState.selected.length} items selected`);
+    return;
+  }
 
   gameState.selected.push(item.id);
-  session.attempts++;
+  card.classList.add("revealed");
 
   const isTarget=gameState.learned.some(
     learned=>learned.id===item.id
@@ -1600,12 +1355,13 @@ function recognitionSelect(item,card){
 
   if(isTarget){
     card.style.borderColor="var(--green)";
-    setFeedback("Previously studied item","var(--green)");
+    setFeedback("Previously studied item · selected","var(--green)");
   }else{
     card.style.borderColor="var(--red)";
     gameState.falseSelections++;
-    setFeedback("New item — not in the study set","var(--red)");
+    setFeedback("New item · selected as an answer","var(--red)");
   }
+  session.attempts++;
 }
 
 function submitRecognition(){
@@ -1651,54 +1407,30 @@ function submitRecognition(){
 }
 
 function associationRound(){
-  const p=levelParams(config.level);
-  const wordMode=config.level>=6;
-  const pairCount=p.pairCount;
-
-  const pool=getItems(pairCount,wordMode);
-  const deck=shuffle(
-    pool.flatMap((item,index)=>[
-      {...item,uid:index*2},
-      {...item,uid:index*2+1}
-    ])
-  );
-
-  gameState={
-    deck,
-    flipped:[],
-    matched:[],
-    phase:"input",
-    wordMode,
-    started:Date.now(),
-    lock:false
-  };
-
-  const board=document.createElement("div");
-  board.className="card-board dynamic";
-  board.style.gridTemplateColumns=
-    `repeat(${pairCount<=3?3:4},minmax(0,1fr))`;
-
+  const p=levelParams(config.level),pairCount=p.pairCount;
+  const pairs=shuffle(ASSOCIATIONS).slice(0,pairCount);
+  const deck=shuffle(pairs.flatMap((pair,index)=>[
+    {id:"pair-"+index,face:pair[0],uid:index*2},
+    {id:"pair-"+index,face:pair[1],uid:index*2+1}
+  ]));
+  gameState={deck,flipped:[],matched:[],phase:"study",wordMode:false,started:0,lock:false};
+  const board=document.createElement("div");board.className="card-board dynamic";
+  board.style.gridTemplateColumns=`repeat(${pairCount<=3?3:4},minmax(0,1fr))`;
+  const cards=[];
   deck.forEach(item=>{
-    const card=document.createElement("button");
-
-    card.className="memory-card"+
-      (wordMode?" word-card":"");
-
-    card.innerHTML=wordMode
-      ?`<span class="backmark">?</span><span class="word">${item.word}</span>`
-      :`<span class="backmark">?</span><span class="face">${item.face}</span>`;
-
-    card.addEventListener("click",()=>{
-      flipCard(item,card);
-    });
-
-    board.appendChild(card);
+    const card=document.createElement("button");card.className="memory-card revealed";
+    card.innerHTML=`<span class="backmark">?</span><span class="face">${item.face}</span>`;
+    card.addEventListener("click",()=>flipCard(item,card));cards.push(card);board.appendChild(card);
   });
-
-  $("stageInner").appendChild(board);
-
-  setPrompt("Find all matching pairs");
-  setFeedback("");
+  $("stageInner").appendChild(board);setPrompt("Study the picture pairs and their positions");setFeedback("");
+  phaseTimer=schedulePhase(()=>{
+    if(!session||paused)return;
+    cards.forEach(card=>card.classList.remove("revealed"));setPrompt(retentionPrompt());
+    phaseTimer=schedulePhase(()=>{
+      if(!session||paused)return;
+      gameState.phase="input";gameState.started=Date.now();setPrompt("Find all matching pairs");
+    },retentionMilliseconds());
+  },p.exposure/speedFactor());
 }
 
 function flipCard(item,card){
@@ -1746,7 +1478,7 @@ function flipCard(item,card){
     setFeedback("Not a match — try again","var(--yellow)");
     gameState.lock=true;
 
-    phaseTimer=setTimeout(()=>{
+    phaseTimer=schedulePhase(()=>{
       if(!session) return;
 
       first.card.classList.remove("revealed");
@@ -1766,14 +1498,15 @@ function pauseGame(){
   paused=!paused;
 
   if(paused){
-    clearTimers();
+    pausePhaseTimer();
     $("pauseBtn").textContent="Resume";
     setPrompt("Paused");
     setFeedback("Session paused","var(--yellow)");
   }else{
     $("pauseBtn").textContent="Pause";
     setFeedback("");
-    startRound();
+    if(phaseCallback) resumePhaseTimer();
+    else setPrompt("Session resumed · continue your response");
   }
 }
 
@@ -1829,7 +1562,10 @@ function finishSession(){
     rounds:session.rounds,
     bestLoad:session.bestLoad,
     avgResponse:avg,
-    orientation:config.orientation
+    orientation:config.orientation,
+    retentionEnabled:config.retentionEnabled,
+    retentionSeconds:config.retentionEnabled?config.retentionSeconds:0,
+    stimulusSpeed:config.stimulusSpeed
   };
 
   history.push(record);
@@ -1846,9 +1582,9 @@ function renderResults(record){
 
   $("resultSubtitle").textContent=
     `Level ${record.level} · ${record.mode}`+
-    (record.gameId==="spatial"
-      ?" · "+record.orientation.toUpperCase()
-      :"");
+    (record.gameId==="spatial"?" · "+record.orientation.toUpperCase():"")+
+    (record.retentionEnabled?" · Retention "+record.retentionSeconds+"s":" · Immediate recall")+
+    " · Stimulus speed "+record.stimulusSpeed+"×";
 
   const total=record.correct+record.errors;
   const accuracy=total
@@ -1859,7 +1595,7 @@ function renderResults(record){
   const seconds=record.duration%60;
 
   const tiles=[
-    ["Correct rounds / pairs",record.correct],
+    ["Correct responses / rounds",record.correct],
     ["Errors",record.errors],
     ["Accuracy",accuracy],
     ["Best memory load",record.bestLoad||"—"],
@@ -1916,6 +1652,11 @@ function renderHistory(){
 
 $("levelRange").addEventListener("input",event=>{
   $("levelValue").textContent=event.target.value;
+});
+$("retentionToggle").addEventListener("change",()=>{
+  const enabled=$("retentionToggle").value==="on";
+  $("retentionDuration").disabled=!enabled;
+  $("retentionDurationField").style.opacity=enabled?"1":".55";
 });
 
 document.querySelectorAll("[data-game]").forEach(button=>{
