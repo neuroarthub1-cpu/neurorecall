@@ -1,0 +1,1997 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080d18">
+<title>Memory & Learning | Module 2</title>
+
+<style>
+:root{
+  --bg:#080d18;
+  --panel:#111b2c;
+  --panel2:#192840;
+  --line:#2a3c57;
+  --text:#f2f6ff;
+  --muted:#9aabc5;
+  --blue:#58a6ff;
+  --cyan:#55d6d0;
+  --green:#59d98e;
+  --red:#ff6b78;
+  --yellow:#ffd166;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+body{min-height:100dvh}
+button,select,input{font:inherit}
+button{touch-action:manipulation}
+button:focus-visible,select:focus-visible,input:focus-visible{
+  outline:3px solid var(--cyan);
+  outline-offset:3px;
+}
+.app{min-height:100dvh;display:flex;flex-direction:column}
+.topbar{
+  min-height:65px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px clamp(12px,3vw,32px);
+  border-bottom:1px solid rgba(154,171,197,.16);
+  background:#080d18;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+.brand{display:flex;align-items:center;gap:11px}
+.brandmark{
+  width:40px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,#2876d5,#55d6d0);
+  display:grid;place-items:center;
+  font-size:21px;font-weight:900;color:#07101d;
+}
+.brand h1{font-size:15px;letter-spacing:.09em;margin:0}
+.brand p{font-size:10px;color:var(--muted);margin:3px 0 0;letter-spacing:.12em}
+.top-actions{display:flex;align-items:center;gap:8px}
+.status{font-size:11px;color:var(--muted)}
+main{
+  width:100%;
+  max-width:1600px;
+  margin:0 auto;
+  padding:clamp(12px,2.5vw,30px);
+  flex:1;
+}
+.view{display:none}
+.view.active{display:block}
+.eyebrow{
+  font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--cyan);font-weight:800;
+}
+h2{font-size:clamp(26px,4vw,40px);line-height:1.1;margin:8px 0}
+.lead{color:var(--muted);line-height:1.55;max-width:800px;margin:0 0 24px}
+.btn{
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:11px 15px;
+  background:#1b2a42;
+  color:var(--text);
+  font-weight:700;
+  cursor:pointer;
+}
+.btn.primary{background:linear-gradient(135deg,#2876d5,#2461ad);border-color:#428fe8}
+.btn.ghost{background:transparent}
+.btn.danger{background:#512632;border-color:#8c3d50}
+.btn.small{padding:8px 11px;font-size:12px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.panel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:clamp(15px,2.5vw,25px);
+}
+.game-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+.game-card{
+  background:linear-gradient(160deg,#17253b,#101827);
+  border:1px solid var(--line);
+  border-radius:20px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height:340px;
+}
+.card-art{
+  height:165px;
+  display:grid;
+  place-items:center;
+  background:radial-gradient(circle at 50% 40%,#1e4168,#101a2b 72%);
+}
+.card-art svg{width:90%;height:90%;max-height:155px}
+.card-body{
+  padding:19px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  flex:1;
+}
+.card-body h3{font-size:19px;margin:0}
+.card-body p{color:var(--muted);font-size:13px;line-height:1.5;margin:0}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding:7px 0}
+.tag{
+  font-size:10px;color:#c5d6ef;
+  background:#22324b;border:1px solid #344967;
+  border-radius:999px;padding:5px 8px;
+}
+.notice{font-size:11px;color:var(--muted);line-height:1.5;margin-top:17px}
+.setup-wrap{max-width:900px;margin:0 auto}
+.setup-head{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.setup-head h2{font-size:26px;margin:0}
+.field-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:17px;
+}
+.field{display:flex;flex-direction:column;gap:8px}
+.field label{font-size:12px;color:#c4d2e7;font-weight:750}
+select{
+  background:#0b1423;color:var(--text);
+  border:1px solid #344763;border-radius:11px;
+  padding:12px;width:100%;min-height:46px;
+}
+.range-row{display:flex;align-items:center;gap:12px}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.level-number{font-size:23px;color:var(--cyan);font-weight:850;min-width:24px;text-align:right}
+.helper{font-size:11px;color:var(--muted);line-height:1.45}
+.advanced{margin-top:18px;border-top:1px solid var(--line);padding-top:15px}
+.advanced summary{cursor:pointer;color:#c6d6ed;font-weight:750;font-size:13px}
+.advanced-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding-top:15px}
+.setup-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+.game-shell{
+  display:flex;flex-direction:column;
+  min-height:calc(100dvh - 105px);gap:11px;
+}
+.game-toolbar{
+  display:flex;align-items:center;
+  justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.game-title h2{font-size:21px;margin:0}
+.game-title p{font-size:12px;color:var(--muted);margin:4px 0 0}
+.toolbar-actions{display:flex;gap:8px;flex-wrap:wrap}
+.progress-track{height:6px;background:#1b2940;border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.metrics{display:flex;gap:8px;flex-wrap:wrap}
+.metric{
+  background:#101a2b;border:1px solid var(--line);
+  border-radius:10px;padding:7px 11px;min-width:80px;
+}
+.metric span{
+  display:block;color:var(--muted);font-size:10px;
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.metric strong{display:block;font-size:17px;margin-top:2px;font-variant-numeric:tabular-nums}
+.stimulus-stage{
+  position:relative;
+  flex:1;
+  min-height:500px;
+  border:1px solid #2b3d59;
+  border-radius:20px;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse at 50% 45%,rgba(32,68,105,.45),transparent 65%),
+    linear-gradient(145deg,#101b2e,#0a1220 70%);
+  display:flex;
+  align-items:stretch;
+  justify-content:stretch;
+  padding:clamp(12px,2vw,24px);
+}
+.stage-inner{
+  width:100%;
+  min-height:460px;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.prompt{
+  position:absolute;top:8px;left:50%;
+  transform:translateX(-50%);z-index:5;
+  background:rgba(6,12,22,.86);
+  border:1px solid #30435f;border-radius:999px;
+  padding:8px 14px;color:#dce9fa;
+  font-size:13px;text-align:center;
+  max-width:94%;white-space:normal;
+}
+.feedback{
+  position:absolute;bottom:7px;left:50%;
+  transform:translateX(-50%);z-index:5;
+  font-weight:800;font-size:14px;
+  min-height:20px;text-align:center;
+  width:90%;
+}
+.dynamic{touch-action:manipulation}
+.big-buttons{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(120px, min(22vw,220px)));
+  gap:clamp(12px,3vw,28px);
+  margin:auto;
+}
+.seq-button{
+  aspect-ratio:1;
+  border:3px solid rgba(255,255,255,.22);
+  border-radius:25px;
+  cursor:pointer;
+  box-shadow:inset 0 -8px 0 rgba(0,0,0,.15),0 12px 26px rgba(0,0,0,.2);
+  min-height:100px;
+}
+.seq-button:active{transform:scale(.97)}
+.seq-button.lit{filter:brightness(1.7);outline:5px solid white;outline-offset:3px}
+.c0{background:#e34d59}.c1{background:#2685e8}
+.c2{background:#20ad75}.c3{background:#e6ad32}
+.grid-memory{
+  display:grid;
+  gap:clamp(5px,1vw,13px);
+  width:min(88vw, min(75vh,760px));
+  max-width:100%;
+  aspect-ratio:1;
+  margin:auto;
+}
+.grid-cell{
+  border:1px solid #49617f;border-radius:9px;
+  background:linear-gradient(145deg,#233650,#17263b);
+  cursor:pointer;min-width:0;min-height:0;
+  touch-action:manipulation;
+}
+.grid-cell.lit{background:#55d6d0;border-color:#c2fffa}
+.grid-cell.selected{background:#347fc8;border-color:#c5e2ff}
+.grid-cell.wrong{background:#b23b4c}
+.grid-cell:active{transform:scale(.96)}
+.iso-wrap{
+  width:min(96%,1000px);
+  height:min(75vh,650px);
+  min-height:400px;
+  position:relative;
+  display:grid;
+  place-items:center;
+}
+.iso-svg{width:100%;height:100%;overflow:visible;touch-action:manipulation}
+.iso-cube{cursor:pointer;stroke:#8ba4c4;stroke-width:1.5}
+.iso-cube .top{fill:#496785}
+.iso-cube .left{fill:#29435f}
+.iso-cube .right{fill:#365675}
+.iso-cube.lit .top{fill:#a7fff2}
+.iso-cube.lit .left{fill:#35a9a8}
+.iso-cube.lit .right{fill:#4bc9c0}
+.iso-cube.selected .top{fill:#8bc7ff}
+.iso-cube.selected .left{fill:#3478ba}
+.iso-cube.selected .right{fill:#4b94d8}
+.iso-cube.wrong .top,.iso-cube.wrong .left,.iso-cube.wrong .right{fill:#bd4c5a}
+.submit-spatial{
+  position:absolute;bottom:35px;left:50%;
+  transform:translateX(-50%);z-index:6;
+}
+.card-board{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(70px,1fr));
+  gap:clamp(8px,1.5vw,16px);
+  width:min(100%,1000px);
+  margin:auto;
+  align-content:center;
+}
+.memory-card{
+  aspect-ratio:1.05;
+  border:1px solid #405675;border-radius:15px;
+  background:linear-gradient(145deg,#263b59,#14243a);
+  display:grid;place-items:center;cursor:pointer;
+  position:relative;overflow:hidden;
+  box-shadow:0 8px 18px rgba(0,0,0,.2);
+  font-size:clamp(25px,5vw,52px);
+  color:white;
+}
+.memory-card:active{transform:scale(.97)}
+.memory-card .face{display:none}
+.memory-card.revealed .face,.memory-card.matched .face{display:block}
+.memory-card.revealed,.memory-card.matched{
+  background:linear-gradient(145deg,#e7f1ff,#c7d9ef);
+  color:#15243a;
+}
+.memory-card.matched{border:2px solid var(--green)}
+.memory-card .backmark{font-size:clamp(22px,4vw,38px);font-weight:900;color:#83a8d4}
+.memory-card.revealed .backmark,.memory-card.matched .backmark{display:none}
+.memory-card .word{
+  font-size:clamp(12px,2vw,19px);font-weight:800;
+  color:#172a43;text-align:center;padding:5px;display:none;
+}
+.memory-card.word-card .word{display:block}
+.memory-card.word-card .face{display:none}
+.memory-card.word-card.revealed .word,.memory-card.word-card.matched .word{display:block}
+.memory-card.word-card.revealed .backmark,.memory-card.word-card.matched .backmark{display:none}
+.results-wrap{max-width:900px;margin:20px auto}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}
+.result-tile{background:#101a2b;border:1px solid var(--line);border-radius:14px;padding:15px}
+.result-tile span{display:block;color:var(--muted);font-size:11px}
+.result-tile strong{font-size:25px;display:block;margin-top:5px}
+.result-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.history-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.history-item{
+  display:flex;justify-content:space-between;gap:12px;
+  padding:12px;background:#0e1726;
+  border:1px solid var(--line);border-radius:11px;font-size:12px;
+}
+.empty{color:var(--muted);font-size:13px;padding:15px 0}
+.hidden{display:none!important}
+@media(max-width:900px){
+  .game-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .topbar{padding:9px 11px}
+  .brandmark{width:35px;height:35px}
+  .brand h1{font-size:13px}
+  .status{display:none}
+  main{padding:11px}
+  .game-grid{grid-template-columns:1fr}
+  .game-card{min-height:0}
+  .card-art{height:135px}
+  .field-grid,.advanced-grid{grid-template-columns:1fr}
+  .setup-head h2{font-size:22px}
+  .game-shell{min-height:calc(100dvh - 80px)}
+  .stimulus-stage{min-height:470px;padding:9px}
+  .stage-inner{min-height:440px}
+  .game-toolbar{align-items:flex-start}
+  .toolbar-actions{width:100%}
+  .toolbar-actions .btn{flex:1}
+  .card-board{grid-template-columns:repeat(4,minmax(48px,1fr));gap:7px}
+  .result-grid{grid-template-columns:repeat(2,1fr)}
+  .prompt{font-size:11px;top:5px}
+  .grid-memory{width:min(88vw,65vh)}
+}
+@media(orientation:landscape) and (max-height:560px){
+  .topbar{min-height:48px;padding:5px 12px}
+  .brandmark{width:30px;height:30px}
+  .game-shell{min-height:calc(100dvh - 58px)}
+  .stimulus-stage{min-height:320px}
+  .stage-inner{min-height:300px}
+  .iso-wrap{height:65vh;min-height:280px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brandmark">M</div>
+    <div>
+      <h1>MEMORY LAB</h1>
+      <p>MEMORY & LEARNING · MODULE 02</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <span class="status" id="saveStatus">Saved on this device</span>
+    <button class="btn ghost small" id="historyBtn">History</button>
+  </div>
+</header>
+
+<main>
+
+<!-- HOME -->
+<section class="view active" id="homeView">
+  <div class="eyebrow">Cognitive training · Module 02</div>
+  <h2>Memory & Learning</h2>
+  <p class="lead">
+    Three different memory training tasks. Select a game, choose its training mode,
+    and set the challenge level.
+  </p>
+
+  <div class="game-grid">
+
+    <article class="game-card">
+      <div class="card-art">
+        <svg viewBox="0 0 360 180">
+          <rect x="70" y="15" width="90" height="65" rx="14" fill="#e34d59"/>
+          <rect x="200" y="15" width="90" height="65" rx="14" fill="#2685e8"/>
+          <rect x="70" y="100" width="90" height="65" rx="14" fill="#20ad75"/>
+          <rect x="200" y="100" width="90" height="65" rx="14" fill="#e6ad32"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <h3>01 · Sequence Memory</h3>
+        <p>
+          Remember a sequence of stimuli and reproduce it in the correct order.
+          Includes forward, reverse and updating tasks.
+        </p>
+        <div class="tags">
+          <span class="tag">Sequential memory</span>
+          <span class="tag">Working memory</span>
+        </div>
+        <button class="btn primary" data-game="sequence">Open game</button>
+      </div>
+    </article>
+
+    <article class="game-card">
+      <div class="card-art">
+        <svg viewBox="0 0 360 180">
+          <g transform="translate(65 10)">
+            <rect width="230" height="160" rx="12" fill="#14283e" stroke="#6383a8" stroke-width="2"/>
+            <g fill="#253e5b" stroke="#6b89a9" stroke-width="2">
+              <rect x="15" y="15" width="58" height="38" rx="5"/>
+              <rect x="86" y="15" width="58" height="38" rx="5"/>
+              <rect x="157" y="15" width="58" height="38" rx="5"/>
+              <rect x="15" y="63" width="58" height="38" rx="5"/>
+              <rect x="86" y="63" width="58" height="38" rx="5"/>
+              <rect x="157" y="63" width="58" height="38" rx="5"/>
+              <rect x="15" y="111" width="58" height="38" rx="5"/>
+              <rect x="86" y="111" width="58" height="38" rx="5"/>
+              <rect x="157" y="111" width="58" height="38" rx="5"/>
+            </g>
+            <rect x="86" y="63" width="58" height="38" rx="5" fill="#55d6d0"/>
+            <rect x="157" y="111" width="58" height="38" rx="5" fill="#55d6d0"/>
+          </g>
+        </svg>
+      </div>
+      <div class="card-body">
+        <h3>02 · Spatial Memory</h3>
+        <p>
+          Remember locations and reconstruct spatial arrangements.
+          Choose between a flat 2D grid and a three-dimensional block field.
+        </p>
+        <div class="tags">
+          <span class="tag">Location memory</span>
+          <span class="tag">2D / 3D</span>
+        </div>
+        <button class="btn primary" data-game="spatial">Open game</button>
+      </div>
+    </article>
+
+    <article class="game-card">
+      <div class="card-art">
+        <svg viewBox="0 0 360 180">
+          <g transform="translate(55 20)" fill="#dceaff" stroke="#7ea1cc" stroke-width="2">
+            <rect x="0" y="0" width="70" height="62" rx="9"/>
+            <rect x="88" y="0" width="70" height="62" rx="9"/>
+            <rect x="176" y="0" width="70" height="62" rx="9"/>
+            <rect x="0" y="76" width="70" height="62" rx="9"/>
+            <rect x="88" y="76" width="70" height="62" rx="9"/>
+            <rect x="176" y="76" width="70" height="62" rx="9"/>
+          </g>
+          <g font-size="34" text-anchor="middle">
+            <text x="90" y="63">🍎</text><text x="178" y="63">🔑</text>
+            <text x="266" y="63">🌙</text><text x="90" y="139">🚲</text>
+            <text x="178" y="139">🐟</text><text x="266" y="139">☂️</text>
+          </g>
+        </svg>
+      </div>
+      <div class="card-body">
+        <h3>03 · Memory Recall</h3>
+        <p>
+          Study pictures or words, then identify previously learned items.
+          Includes recognition and associative matching.
+        </p>
+        <div class="tags">
+          <span class="tag">Recognition</span>
+          <span class="tag">Association</span>
+        </div>
+        <button class="btn primary" data-game="recall">Open game</button>
+      </div>
+    </article>
+
+  </div>
+
+  <div class="notice">
+    Results describe performance within each training task. They are not a diagnosis
+    or a standalone measure of general memory ability.
+  </div>
+</section>
+
+<!-- SETUP -->
+<section class="view" id="setupView">
+  <div class="setup-wrap">
+    <div class="setup-head">
+      <button class="btn ghost" id="setupBack">← Back</button>
+      <div>
+        <div class="eyebrow">Training setup</div>
+        <h2 id="setupTitle">Sequence Memory</h2>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="field-grid">
+
+        <div class="field">
+          <label for="modeSelect">Training mode</label>
+          <select id="modeSelect"></select>
+          <div class="helper" id="modeHelp"></div>
+        </div>
+
+        <div class="field hidden" id="orientationField">
+          <label for="orientationSelect">Spatial orientation</label>
+          <select id="orientationSelect">
+            <option value="2d">2D · Flat grid</option>
+            <option value="3d">3D · Isometric blocks</option>
+          </select>
+          <div class="helper">Choose how spatial locations are presented.</div>
+        </div>
+
+        <div class="field">
+          <label for="durationSelect">Session duration</label>
+          <select id="durationSelect">
+            <option value="60">1 minute</option>
+            <option value="120" selected>2 minutes</option>
+            <option value="180">3 minutes</option>
+            <option value="300">5 minutes</option>
+            <option value="0">Untimed · Manual finish</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Challenge level</label>
+          <div class="range-row">
+            <input id="levelRange" type="range" min="0" max="8" step="1" value="3">
+            <strong class="level-number" id="levelValue">3</strong>
+          </div>
+          <div class="helper">
+            Level 0 is the easiest configuration. Level 8 is the most demanding.
+            Each game adjusts its own task parameters.
+          </div>
+        </div>
+
+      </div>
+
+      <details class="advanced">
+        <summary>Advanced clinician settings (optional)</summary>
+        <div class="advanced-grid">
+          <div class="field">
+            <label for="delaySelect">Additional recall delay</label>
+            <select id="delaySelect">
+              <option value="0">No additional delay</option>
+              <option value="2">2 seconds</option>
+              <option value="5">5 seconds</option>
+              <option value="10">10 seconds</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="paceSelect">Presentation pace</label>
+            <select id="paceSelect">
+              <option value="auto">Automatic · level-based</option>
+              <option value="slow">Slower</option>
+              <option value="fast">Faster</option>
+            </select>
+          </div>
+        </div>
+        <p class="helper">
+          These optional settings override timing parameters. The selected challenge
+          level remains unchanged.
+        </p>
+      </details>
+
+      <div class="setup-actions">
+        <button class="btn primary" id="continueBtn">Continue →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTRUCTIONS -->
+<section class="view" id="instructionView">
+  <div class="setup-wrap">
+    <div class="setup-head">
+      <button class="btn ghost" id="instructionBack">← Setup</button>
+      <div>
+        <div class="eyebrow">Before you begin</div>
+        <h2 id="instructionTitle">How to play</h2>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div id="instructionText" style="line-height:1.7;color:#d7e4f5"></div>
+      <div style="margin-top:20px;padding:14px;background:#0c1728;border:1px solid var(--line);border-radius:13px">
+        <strong>Practice</strong>
+        <p class="helper" style="margin:6px 0 12px">
+          Try the game before starting the recorded training session.
+          Practice performance is not included in session history.
+        </p>
+        <button class="btn" id="practiceBtn">Start practice</button>
+      </div>
+      <div class="setup-actions">
+        <button class="btn primary" id="beginBtn">Start training</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GAME -->
+<section class="view" id="gameView">
+  <div class="game-shell">
+
+    <div class="game-toolbar">
+      <div class="game-title">
+        <h2 id="liveTitle">Sequence Memory</h2>
+        <p id="liveSub">Level 3</p>
+      </div>
+      <div class="toolbar-actions">
+        <button class="btn small" id="pauseBtn">Pause</button>
+        <button class="btn small" id="restartBtn">Restart</button>
+        <button class="btn danger small" id="finishBtn">Finish</button>
+      </div>
+    </div>
+
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="metrics">
+      <div class="metric"><span>Time</span><strong id="timeMetric">02:00</strong></div>
+      <div class="metric"><span>Correct</span><strong id="correctMetric">0</strong></div>
+      <div class="metric"><span>Errors</span><strong id="errorMetric">0</strong></div>
+      <div class="metric"><span>Memory load</span><strong id="loadMetric">—</strong></div>
+    </div>
+
+    <div class="stimulus-stage">
+      <div class="stage-inner" id="stageInner">
+        <div class="prompt" id="gamePrompt">Watch carefully</div>
+        <div class="feedback" id="gameFeedback"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap">
+      <button class="btn" id="repeatPromptBtn">Repeat instruction</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="view" id="resultsView">
+  <div class="results-wrap panel">
+    <div class="eyebrow">Session complete</div>
+    <h2 id="resultTitle">Training results</h2>
+    <p class="lead" id="resultSubtitle" style="margin-bottom:8px"></p>
+    <div class="result-grid" id="resultGrid"></div>
+    <div class="panel" style="padding:16px;background:#0d1727">
+      <strong>Session summary</strong>
+      <p id="resultSummary" class="helper" style="font-size:13px;margin-bottom:0"></p>
+    </div>
+    <div class="result-actions">
+      <button class="btn primary" id="againBtn">Train again</button>
+      <button class="btn" id="homeBtn">Return to games</button>
+    </div>
+  </div>
+</section>
+
+<!-- HISTORY -->
+<section class="view" id="historyView">
+  <div class="setup-wrap">
+    <div class="setup-head">
+      <button class="btn ghost" id="historyBack">← Back</button>
+      <div>
+        <div class="eyebrow">Local records</div>
+        <h2>Session history</h2>
+      </div>
+    </div>
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <p class="helper" style="margin:0">
+          Records are stored in this browser on this device only.
+        </p>
+        <button class="btn danger small" id="clearHistoryBtn">Clear history</button>
+      </div>
+      <div class="history-list" id="historyList"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+"use strict";
+
+(() => {
+
+const $ = id => document.getElementById(id);
+
+const views = [
+  "homeView","setupView","instructionView",
+  "gameView","resultsView","historyView"
+];
+
+const GAME = {
+  sequence:{
+    title:"Sequence Memory",
+    modes:{
+      forward:{
+        label:"Forward sequence",
+        help:"Remember and reproduce the sequence in the same order."
+      },
+      reverse:{
+        label:"Reverse sequence",
+        help:"Remember the sequence, then reproduce it in reverse order."
+      },
+      updating:{
+        label:"Updating memory",
+        help:"Track a changing stream and reproduce only the most recent items."
+      },
+      delayed:{
+        label:"Delayed sequence",
+        help:"Remember the sequence, wait, then reproduce it."
+      }
+    }
+  },
+
+  spatial:{
+    title:"Spatial Memory",
+    modes:{
+      location:{
+        label:"Location recall",
+        help:"Remember the highlighted positions and select the same locations."
+      },
+      pattern:{
+        label:"Pattern recall",
+        help:"Remember the overall spatial arrangement and reconstruct it."
+      },
+      delayed:{
+        label:"Delayed spatial recall",
+        help:"Remember the highlighted locations across a retention interval."
+      }
+    }
+  },
+
+  recall:{
+    title:"Memory Recall",
+    modes:{
+      picture:{
+        label:"Picture recognition",
+        help:"Study pictures and identify the previously seen pictures."
+      },
+      word:{
+        label:"Word recognition",
+        help:"Study words and identify the previously seen words."
+      },
+      association:{
+        label:"Associative matching",
+        help:"Find matching pairs while remembering their locations."
+      },
+      delayed:{
+        label:"Delayed recognition",
+        help:"Study items, wait through a retention interval, then recognise them."
+      }
+    }
+  }
+};
+
+const WORDS = [
+  "APPLE","RIVER","CHAIR","PLANET","GARDEN","WINDOW",
+  "BRIDGE","ORANGE","BUTTON","LANTERN","FOREST","PENCIL",
+  "OCEAN","CASTLE","MIRROR","CANDLE","BOTTLE","CAMERA",
+  "MARKET","TUNNEL","FLOWER","MOUNTAIN","CLOCK","VILLAGE",
+  "LADDER","CLOUD","BASKET","JOURNEY","POCKET","ISLAND"
+];
+
+const EMOJI = [
+  "🍎","🔑","🌙","🚲","🐟","☂️","⭐","🍋","🎈","🏠",
+  "🌻","📚","🚗","🧩","🦋","🍄","🎸","⚽","🧸","🚀",
+  "🍇","🪁","🐢","🌈","🌵","🎯","🦉","🍉","🛶","🎨"
+];
+
+let selectedGame = "sequence";
+let config = {};
+let session = null;
+let timerId = null;
+let phaseTimer = null;
+let paused = false;
+let practiceMode = false;
+let gameState = {};
+let history = loadHistory();
+
+function loadHistory(){
+  try{
+    return JSON.parse(localStorage.getItem("memoryLabHistory") || "[]");
+  }catch(e){
+    return [];
+  }
+}
+
+function saveHistory(){
+  try{
+    localStorage.setItem(
+      "memoryLabHistory",
+      JSON.stringify(history.slice(-100))
+    );
+    $("saveStatus").textContent = "Saved on this device";
+  }catch(e){
+    $("saveStatus").textContent = "Local storage unavailable";
+  }
+}
+
+function showView(id){
+  views.forEach(v => $(v).classList.toggle("active",v===id));
+  window.scrollTo(0,0);
+}
+
+function shuffle(array){
+  const a = array.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function rand(n){
+  return Math.floor(Math.random()*n);
+}
+
+function clamp(n,min,max){
+  return Math.max(min,Math.min(max,n));
+}
+
+/* Difficulty mapping:
+   Each game converts the common Level 0–8 into task-specific demands.
+*/
+function levelParams(level){
+  return {
+    sequenceLength:clamp(2+Math.floor(level*0.8),2,9),
+    presentationInterval:Math.max(420,1250-level*95),
+    gridSize:clamp(3+Math.floor(level/2),3,7),
+    exposure:Math.max(650,2600-level*220),
+    retention:Math.round(level*0.55),
+    recallItems:clamp(3+Math.floor(level*0.65),3,8),
+    distractors:clamp(2+Math.floor(level*0.5),2,7),
+    pairCount:clamp(2+Math.floor(level*0.55),2,8)
+  };
+}
+
+function paceFactor(){
+  if(config.pace==="slow") return 1.3;
+  if(config.pace==="fast") return 0.75;
+  return 1;
+}
+
+function clearTimers(){
+  clearTimeout(phaseTimer);
+  phaseTimer=null;
+}
+
+function clearAllTimers(){
+  clearTimers();
+  clearInterval(timerId);
+  timerId=null;
+}
+
+function setPrompt(text){
+  $("gamePrompt").textContent=text;
+}
+
+function setFeedback(text,color){
+  $("gameFeedback").textContent=text;
+  $("gameFeedback").style.color=color || "var(--cyan)";
+}
+
+function clearDynamic(){
+  $("stageInner").querySelectorAll(".dynamic").forEach(el=>el.remove());
+}
+
+function setupGame(game){
+  selectedGame=game;
+  $("setupTitle").textContent=GAME[game].title;
+
+  $("modeSelect").innerHTML=Object.entries(GAME[game].modes)
+    .map(([key,mode])=>`<option value="${key}">${mode.label}</option>`)
+    .join("");
+
+  $("modeHelp").textContent=Object.values(GAME[game].modes)[0].help;
+
+  $("modeSelect").onchange=()=>{
+    $("modeHelp").textContent=
+      GAME[game].modes[$("modeSelect").value].help;
+  };
+
+  $("orientationField").classList.toggle("hidden",game!=="spatial");
+
+  $("levelRange").value=3;
+  $("levelValue").textContent="3";
+
+  showView("setupView");
+}
+
+function readConfig(){
+  config={
+    game:selectedGame,
+    mode:$("modeSelect").value,
+    level:Number($("levelRange").value),
+    duration:Number($("durationSelect").value),
+    orientation:$("orientationSelect").value,
+    extraDelay:Number($("delaySelect").value),
+    pace:$("paceSelect").value
+  };
+}
+
+function modeLabel(){
+  return GAME[config.game].modes[config.mode].label;
+}
+
+function instructionMarkup(){
+  if(config.game==="sequence"){
+    const explanations={
+      forward:"Reproduce the illuminated buttons in exactly the same order.",
+      reverse:"After watching, enter the sequence from last to first.",
+      updating:"Watch the stream. At the end, reproduce only the most recent items in their original order.",
+      delayed:"After the sequence disappears, wait for the cue before reproducing it."
+    };
+
+    return `
+      <p>Four large coloured buttons will illuminate one at a time.
+      Watch carefully and remember the order.</p>
+      <p>${explanations[config.mode]}</p>
+      <p>Tap the buttons to enter your answer. Complete the sequence to finish the round.</p>
+    `;
+  }
+
+  if(config.game==="spatial"){
+    const orientation=config.orientation==="3d"
+      ? "An isometric three-dimensional field of blocks will appear. Remember the highlighted blocks and their positions across the different layers."
+      : "A square grid will appear. Remember which cells are highlighted and where they are located.";
+
+    const task={
+      location:"Select the same locations that were highlighted.",
+      pattern:"Reconstruct the complete spatial pattern.",
+      delayed:"Reconstruct the locations after the retention interval."
+    };
+
+    return `
+      <p>${orientation}</p>
+      <p>${task[config.mode]}</p>
+      <p>Select the remembered locations and press Submit pattern when finished.</p>
+    `;
+  }
+
+  if(config.mode==="association"){
+    return `
+      <p>Cards are arranged face down. Turn over two cards at a time and find the matching pairs.</p>
+      <p>Remember both the item and its location. A successful pair remains visible.</p>
+    `;
+  }
+
+  const word=config.mode==="word";
+  return `
+    <p>First, study a set of ${word?"words":"pictures"}. The items will then disappear.</p>
+    <p>After the retention interval, a larger set will appear. Select only the items that were shown during the study phase.</p>
+    <p>Some alternatives are new distractors. Avoid selecting items that were not part of the original set.</p>
+  `;
+}
+
+function showInstructions(){
+  $("instructionTitle").textContent=
+    GAME[selectedGame].title+" · "+modeLabel();
+
+  $("instructionText").innerHTML=instructionMarkup();
+  showView("instructionView");
+}
+
+function updateMetrics(){
+  if(!session) return;
+
+  $("correctMetric").textContent=session.correct;
+  $("errorMetric").textContent=session.errors;
+  $("loadMetric").textContent=session.bestLoad || "—";
+}
+
+function updateClock(){
+  if(!session) return;
+
+  if(config.duration===0){
+    $("timeMetric").textContent="∞";
+    return;
+  }
+
+  const n=Math.max(0,session.remaining);
+  $("timeMetric").textContent=
+    String(Math.floor(n/60)).padStart(2,"0")+":"+
+    String(n%60).padStart(2,"0");
+}
+
+function startClock(){
+  clearInterval(timerId);
+  session.remaining=config.duration;
+  updateClock();
+
+  if(config.duration>0){
+    timerId=setInterval(()=>{
+      if(!session || paused) return;
+
+      session.remaining--;
+      updateClock();
+
+      const elapsed=config.duration-session.remaining;
+      $("progressFill").style.width=
+        (100*elapsed/config.duration)+"%";
+
+      if(session.remaining<=0){
+        finishSession();
+      }
+    },1000);
+  }else{
+    $("progressFill").style.width="0%";
+  }
+}
+
+function createSession(isPractice){
+  clearAllTimers();
+
+  practiceMode=!!isPractice;
+  const now=Date.now();
+
+  session={
+    id:"ML-"+now,
+    start:now,
+    game:config.game,
+    mode:config.mode,
+    level:config.level,
+    duration:config.duration,
+    correct:0,
+    errors:0,
+    rounds:0,
+    bestLoad:0,
+    totalResponse:0,
+    responseCount:0,
+    attempts:0,
+    remaining:config.duration
+  };
+
+  gameState={};
+  paused=false;
+
+  $("liveTitle").textContent=GAME[config.game].title;
+  $("liveSub").textContent=
+    (practiceMode?"PRACTICE · ":"")+
+    `Level ${config.level} · ${modeLabel()}`+
+    (config.game==="spatial"?" · "+config.orientation.toUpperCase():"");
+
+  $("correctMetric").textContent="0";
+  $("errorMetric").textContent="0";
+  $("loadMetric").textContent="—";
+  $("pauseBtn").textContent="Pause";
+  $("progressFill").style.width="0%";
+
+  showView("gameView");
+  startClock();
+  startRound();
+}
+
+function startRound(){
+  if(!session || paused) return;
+
+  clearTimers();
+  clearDynamic();
+
+  if(config.game==="sequence") sequenceRound();
+  if(config.game==="spatial") spatialRound();
+  if(config.game==="recall") recallRound();
+}
+
+function completeRound(){
+  if(!session) return;
+
+  session.rounds++;
+  updateMetrics();
+
+  phaseTimer=setTimeout(()=>{
+    if(session && !paused) startRound();
+  },700);
+}
+
+/* GAME 1 — SEQUENCE MEMORY */
+
+function sequenceRound(){
+  const p=levelParams(config.level);
+  const mode=config.mode;
+
+  const len=p.sequenceLength+
+    (mode==="updating"?1:0);
+
+  const streamLength=mode==="updating"?len+2:len;
+  const stream=Array.from({length:streamLength},()=>rand(4));
+
+  let expected=stream.slice();
+
+  if(mode==="reverse") expected=stream.slice().reverse();
+  if(mode==="updating") expected=stream.slice(-len);
+
+  gameState={
+    stream,
+    expected,
+    input:[],
+    phase:"watch",
+    started:0
+  };
+
+  const board=document.createElement("div");
+  board.className="big-buttons dynamic";
+
+  const names=["Red","Blue","Green","Yellow"];
+
+  for(let i=0;i<4;i++){
+    const button=document.createElement("button");
+    button.className="seq-button c"+i;
+    button.setAttribute("aria-label",names[i]);
+    button.disabled=true;
+    button.addEventListener("click",()=>sequenceInput(i));
+    board.appendChild(button);
+  }
+
+  $("stageInner").appendChild(board);
+
+  setFeedback("");
+  setPrompt(mode==="updating"
+    ?"Watch the stream and remember the final items"
+    :"Watch and remember the sequence");
+
+  const buttons=[...board.children];
+  const interval=p.presentationInterval*paceFactor();
+  let index=0;
+
+  function flashNext(){
+    if(!session || paused) return;
+
+    if(index>=stream.length){
+      buttons.forEach(b=>b.classList.remove("lit"));
+
+      const wait=
+        (mode==="delayed"?Math.max(1000,p.retention*1000):450)+
+        config.extraDelay*1000;
+
+      setPrompt(mode==="delayed"
+        ?"Wait, then reproduce the sequence"
+        :"Now reproduce the sequence");
+
+      phaseTimer=setTimeout(()=>{
+        if(!session || paused) return;
+
+        gameState.phase="input";
+        gameState.started=Date.now();
+
+        buttons.forEach(b=>b.disabled=false);
+        setPrompt("Enter the sequence");
+      },wait);
+
+      return;
+    }
+
+    buttons.forEach(b=>b.classList.remove("lit"));
+    buttons[stream[index]].classList.add("lit");
+    index++;
+
+    phaseTimer=setTimeout(flashNext,interval);
+  }
+
+  phaseTimer=setTimeout(flashNext,450);
+}
+
+function sequenceInput(value){
+  if(!session || paused || gameState.phase!=="input") return;
+
+  gameState.input.push(value);
+  session.attempts++;
+
+  const pos=gameState.input.length-1;
+  const expected=gameState.expected[pos];
+
+  if(value!==expected){
+    session.errors++;
+    setFeedback("Incorrect position","var(--red)");
+  }else{
+    setFeedback("Correct position","var(--green)");
+  }
+
+  if(gameState.input.length>=gameState.expected.length){
+    const correct=gameState.input.every(
+      (v,i)=>v===gameState.expected[i]
+    );
+
+    if(correct){
+      session.correct++;
+      setFeedback("Correct sequence","var(--green)");
+    }else{
+      setFeedback("Sequence completed","var(--yellow)");
+    }
+
+    session.bestLoad=Math.max(
+      session.bestLoad,
+      gameState.expected.length
+    );
+
+    session.totalResponse+=Date.now()-gameState.started;
+    session.responseCount++;
+
+    updateMetrics();
+    completeRound();
+  }else{
+    setFeedback(
+      `${gameState.input.length} / ${gameState.expected.length} entered`
+    );
+  }
+}
+
+/* GAME 2 — SPATIAL MEMORY */
+
+function spatialRound(){
+  const p=levelParams(config.level);
+  const size=p.gridSize;
+  const is3D=config.orientation==="3d";
+
+  const total=is3D?27:size*size;
+  const count=clamp(
+    2+Math.floor(config.level*.7)+
+    (config.mode==="pattern"?1:0),
+    2,
+    Math.min(14,total-1)
+  );
+
+  const targets=shuffle(
+    Array.from({length:total},(_,i)=>i)
+  ).slice(0,count);
+
+  gameState={
+    targets,
+    selected:[],
+    phase:"study",
+    started:0,
+    size,
+    total
+  };
+
+  const board=is3D
+    ?make3DBoard()
+    :make2DBoard(size,total);
+
+  board.classList.add("dynamic");
+  $("stageInner").appendChild(board);
+
+  const cells=[...board.querySelectorAll("[data-index]")];
+
+  targets.forEach(index=>{
+    if(cells[index]) cells[index].classList.add("lit");
+  });
+
+  setFeedback("");
+  setPrompt("Study the highlighted locations");
+
+  const exposure=p.exposure/paceFactor();
+
+  phaseTimer=setTimeout(()=>{
+    if(!session || paused) return;
+
+    cells.forEach(cell=>cell.classList.remove("lit"));
+
+    const wait=
+      (config.mode==="delayed"
+        ?Math.max(1000,p.retention*1000)
+        :350)+config.extraDelay*1000;
+
+    setPrompt(config.mode==="delayed"
+      ?"Wait, then reconstruct the pattern"
+      :"Select the remembered locations");
+
+    phaseTimer=setTimeout(()=>{
+      if(!session || paused) return;
+
+      gameState.phase="input";
+      gameState.started=Date.now();
+
+      setPrompt("Select the remembered locations");
+      addSpatialSubmitButton();
+    },wait);
+
+  },exposure);
+}
+
+function make2DBoard(size,total){
+  const board=document.createElement("div");
+  board.className="grid-memory";
+  board.style.gridTemplateColumns=`repeat(${size},1fr)`;
+
+  for(let i=0;i<total;i++){
+    const cell=document.createElement("button");
+    cell.className="grid-cell";
+    cell.dataset.index=i;
+    cell.setAttribute("aria-label",`Location ${i+1}`);
+    cell.addEventListener("click",()=>spatialSelect(i,cell));
+    board.appendChild(cell);
+  }
+
+  return board;
+}
+
+function make3DBoard(){
+  const wrap=document.createElement("div");
+  wrap.className="iso-wrap";
+
+  const svg=document.createElementNS(
+    "http://www.w3.org/2000/svg","svg"
+  );
+
+  svg.setAttribute("viewBox","0 0 760 560");
+  svg.setAttribute("preserveAspectRatio","xMidYMid meet");
+  svg.classList.add("iso-svg");
+
+  const cubeW=48;
+  const cubeH=28;
+  const baseX=380;
+  const baseY=125;
+  const cols=3;
+  const rows=3;
+  const layers=3;
+
+  let index=0;
+
+  /* Three layers of selectable cube positions.
+     Each cube has a unique index for recall scoring. */
+
+  for(let z=0;z<layers;z++){
+    for(let r=0;r<rows;r++){
+      for(let c=0;c<cols;c++){
+
+        const x=baseX+(c-r)*cubeW*.9;
+        const y=baseY+(c+r)*cubeH*.72-z*cubeH*1.7;
+
+        const group=document.createElementNS(
+          "http://www.w3.org/2000/svg","g"
+        );
+
+        group.setAttribute("class","iso-cube");
+        group.dataset.index=index;
+        group.setAttribute("role","button");
+        group.setAttribute("aria-label",`Block ${index+1}`);
+
+        const top=document.createElementNS(
+          "http://www.w3.org/2000/svg","polygon"
+        );
+        top.setAttribute("class","top");
+        top.setAttribute(
+          "points",
+          `${x},${y} ${x+cubeW*.9},${y+cubeH*.72} ${x},${y+cubeH*1.44} ${x-cubeW*.9},${y+cubeH*.72}`
+        );
+
+        const left=document.createElementNS(
+          "http://www.w3.org/2000/svg","polygon"
+        );
+        left.setAttribute("class","left");
+        left.setAttribute(
+          "points",
+          `${x-cubeW*.9},${y+cubeH*.72} ${x},${y+cubeH*1.44} ${x},${y+cubeH*2.75} ${x-cubeW*.9},${y+cubeH*2.03}`
+        );
+
+        const right=document.createElementNS(
+          "http://www.w3.org/2000/svg","polygon"
+        );
+        right.setAttribute("class","right");
+        right.setAttribute(
+          "points",
+          `${x},${y+cubeH*1.44} ${x+cubeW*.9},${y+cubeH*.72} ${x+cubeW*.9},${y+cubeH*2.03} ${x},${y+cubeH*2.75}`
+        );
+
+        group.append(top,left,right);
+
+        const thisIndex=index;
+        group.addEventListener("click",()=>{
+          spatialSelect(thisIndex,group);
+        });
+
+        svg.appendChild(group);
+        index++;
+      }
+    }
+  }
+
+  wrap.appendChild(svg);
+  return wrap;
+}
+
+function addSpatialSubmitButton(){
+  if($("stageInner").querySelector(".submit-spatial")) return;
+
+  const button=document.createElement("button");
+  button.className="btn primary dynamic submit-spatial";
+  button.textContent="Submit pattern";
+  button.addEventListener("click",submitSpatial);
+
+  $("stageInner").appendChild(button);
+}
+
+function spatialSelect(index,element){
+  if(!session || paused || gameState.phase!=="input") return;
+
+  const position=gameState.selected.indexOf(index);
+
+  if(position>=0){
+    gameState.selected.splice(position,1);
+    element.classList.remove("selected");
+  }else{
+    gameState.selected.push(index);
+    element.classList.add("selected");
+  }
+
+  setFeedback(
+    `${gameState.selected.length} locations selected`
+  );
+}
+
+function submitSpatial(){
+  if(!session || paused || gameState.phase!=="input") return;
+
+  const expected=gameState.targets.slice().sort((a,b)=>a-b);
+  const selected=gameState.selected.slice().sort((a,b)=>a-b);
+
+  const correct=
+    expected.length===selected.length &&
+    expected.every((value,i)=>value===selected[i]);
+
+  session.attempts++;
+
+  if(correct){
+    session.correct++;
+    setFeedback("Pattern reproduced correctly","var(--green)");
+  }else{
+    session.errors++;
+    setFeedback("Pattern did not match","var(--yellow)");
+  }
+
+  session.bestLoad=Math.max(
+    session.bestLoad,
+    gameState.targets.length
+  );
+
+  session.totalResponse+=Date.now()-gameState.started;
+  session.responseCount++;
+
+  const button=$("stageInner").querySelector(".submit-spatial");
+  if(button) button.disabled=true;
+
+  updateMetrics();
+  completeRound();
+}
+
+/* GAME 3 — MEMORY RECALL */
+
+function getItems(count,wordMode){
+  const source=wordMode?WORDS:EMOJI;
+  return shuffle(source).slice(0,count).map(item=>({
+    id:item,
+    word:wordMode?item:"",
+    face:wordMode?"":item
+  }));
+}
+
+function recallRound(){
+  if(config.mode==="association"){
+    associationRound();
+  }else{
+    recognitionRound();
+  }
+}
+
+function recognitionRound(){
+  const p=levelParams(config.level);
+  const wordMode=config.mode==="word";
+  const targetCount=p.recallItems;
+  const distractorCount=p.distractors;
+
+  const pool=getItems(targetCount+distractorCount,wordMode);
+  const learned=pool.slice(0,targetCount);
+  const distractors=pool.slice(targetCount);
+  const choices=shuffle([...learned,...distractors]);
+
+  gameState={
+    learned,
+    choices,
+    selected:[],
+    phase:"study",
+    wordMode,
+    started:0,
+    falseSelections:0
+  };
+
+  const board=document.createElement("div");
+  board.className="card-board dynamic";
+
+  learned.forEach(item=>{
+    board.appendChild(makeStudyCard(item,wordMode));
+  });
+
+  $("stageInner").appendChild(board);
+
+  setFeedback("");
+  setPrompt("Study these items");
+
+  const exposure=p.exposure*1.15/paceFactor();
+
+  phaseTimer=setTimeout(()=>{
+    if(!session || paused) return;
+
+    board.innerHTML="";
+
+    const wait=
+      (config.mode==="delayed"
+        ?Math.max(1000,p.retention*1000)
+        :450)+config.extraDelay*1000;
+
+    setPrompt(config.mode==="delayed"
+      ?"Retention interval"
+      :"Select the items you studied");
+
+    phaseTimer=setTimeout(()=>{
+      if(!session || paused) return;
+
+      gameState.phase="input";
+      gameState.started=Date.now();
+
+      renderRecognitionChoices(board);
+      setPrompt("Select all items from the study phase");
+
+    },wait);
+
+  },exposure);
+}
+
+function makeStudyCard(item,wordMode){
+  const card=document.createElement("div");
+  card.className="memory-card revealed"+(wordMode?" word-card":"");
+
+  if(wordMode){
+    card.innerHTML=`<span class="word">${item.word}</span>`;
+  }else{
+    card.innerHTML=`<span class="face">${item.face}</span>`;
+  }
+
+  return card;
+}
+
+function renderRecognitionChoices(board){
+  board.className="card-board dynamic";
+
+  gameState.choices.forEach(item=>{
+    const card=document.createElement("button");
+
+    card.className="memory-card"+
+      (gameState.wordMode?" word-card":"");
+
+    card.innerHTML=gameState.wordMode
+      ?`<span class="backmark">?</span><span class="word">${item.word}</span>`
+      :`<span class="backmark">?</span><span class="face">${item.face}</span>`;
+
+    card.addEventListener("click",()=>{
+      recognitionSelect(item,card);
+    });
+
+    board.appendChild(card);
+  });
+
+  addRecognitionSubmitButton();
+}
+
+function addRecognitionSubmitButton(){
+  const button=document.createElement("button");
+  button.className="btn primary dynamic submit-spatial";
+  button.textContent="Submit answers";
+  button.addEventListener("click",submitRecognition);
+  $("stageInner").appendChild(button);
+}
+
+function recognitionSelect(item,card){
+  if(!session || paused || gameState.phase!=="input") return;
+  if(card.classList.contains("revealed")) return;
+
+  card.classList.add("revealed");
+
+  gameState.selected.push(item.id);
+  session.attempts++;
+
+  const isTarget=gameState.learned.some(
+    learned=>learned.id===item.id
+  );
+
+  if(isTarget){
+    card.style.borderColor="var(--green)";
+    setFeedback("Previously studied item","var(--green)");
+  }else{
+    card.style.borderColor="var(--red)";
+    gameState.falseSelections++;
+    setFeedback("New item — not in the study set","var(--red)");
+  }
+}
+
+function submitRecognition(){
+  if(!session || paused || gameState.phase!=="input") return;
+
+  const selected=gameState.selected;
+  const targets=gameState.learned.map(item=>item.id);
+
+  const hits=selected.filter(id=>targets.includes(id)).length;
+  const falseAlarms=selected.length-hits;
+  const misses=targets.length-hits;
+
+  const exact=hits===targets.length &&
+    falseAlarms===0 &&
+    misses===0;
+
+  session.attempts++;
+  session.errors+=falseAlarms+misses;
+
+  if(exact){
+    session.correct++;
+    setFeedback("All studied items identified","var(--green)");
+  }else{
+    setFeedback(
+      `${hits} of ${targets.length} studied items identified`,
+      "var(--yellow)"
+    );
+  }
+
+  session.bestLoad=Math.max(
+    session.bestLoad,
+    targets.length
+  );
+
+  session.totalResponse+=Date.now()-gameState.started;
+  session.responseCount++;
+
+  const button=$("stageInner").querySelector(".submit-spatial");
+  if(button) button.disabled=true;
+
+  updateMetrics();
+  completeRound();
+}
+
+function associationRound(){
+  const p=levelParams(config.level);
+  const wordMode=config.level>=6;
+  const pairCount=p.pairCount;
+
+  const pool=getItems(pairCount,wordMode);
+  const deck=shuffle(
+    pool.flatMap((item,index)=>[
+      {...item,uid:index*2},
+      {...item,uid:index*2+1}
+    ])
+  );
+
+  gameState={
+    deck,
+    flipped:[],
+    matched:[],
+    phase:"input",
+    wordMode,
+    started:Date.now(),
+    lock:false
+  };
+
+  const board=document.createElement("div");
+  board.className="card-board dynamic";
+  board.style.gridTemplateColumns=
+    `repeat(${pairCount<=3?3:4},minmax(0,1fr))`;
+
+  deck.forEach(item=>{
+    const card=document.createElement("button");
+
+    card.className="memory-card"+
+      (wordMode?" word-card":"");
+
+    card.innerHTML=wordMode
+      ?`<span class="backmark">?</span><span class="word">${item.word}</span>`
+      :`<span class="backmark">?</span><span class="face">${item.face}</span>`;
+
+    card.addEventListener("click",()=>{
+      flipCard(item,card);
+    });
+
+    board.appendChild(card);
+  });
+
+  $("stageInner").appendChild(board);
+
+  setPrompt("Find all matching pairs");
+  setFeedback("");
+}
+
+function flipCard(item,card){
+  if(!session || paused || gameState.lock ||
+     gameState.phase!=="input") return;
+
+  if(card.classList.contains("revealed") ||
+     card.classList.contains("matched")) return;
+
+  card.classList.add("revealed");
+
+  gameState.flipped.push({item,card});
+  session.attempts++;
+
+  if(gameState.flipped.length!==2) return;
+
+  const [first,second]=gameState.flipped;
+
+  if(first.item.id===second.item.id){
+    first.card.classList.add("matched");
+    second.card.classList.add("matched");
+
+    gameState.matched.push(first.item.id);
+    gameState.flipped=[];
+
+    session.correct++;
+    session.bestLoad=Math.max(
+      session.bestLoad,
+      gameState.matched.length
+    );
+
+    setFeedback("Pair matched","var(--green)");
+    updateMetrics();
+
+    if(gameState.matched.length===gameState.deck.length/2){
+      session.totalResponse+=Date.now()-gameState.started;
+      session.responseCount++;
+      completeRound();
+    }
+
+  }else{
+    session.errors++;
+    updateMetrics();
+
+    setFeedback("Not a match — try again","var(--yellow)");
+    gameState.lock=true;
+
+    phaseTimer=setTimeout(()=>{
+      if(!session) return;
+
+      first.card.classList.remove("revealed");
+      second.card.classList.remove("revealed");
+
+      gameState.flipped=[];
+      gameState.lock=false;
+    },850);
+  }
+}
+
+/* SESSION CONTROL */
+
+function pauseGame(){
+  if(!session) return;
+
+  paused=!paused;
+
+  if(paused){
+    clearTimers();
+    $("pauseBtn").textContent="Resume";
+    setPrompt("Paused");
+    setFeedback("Session paused","var(--yellow)");
+  }else{
+    $("pauseBtn").textContent="Pause";
+    setFeedback("");
+    startRound();
+  }
+}
+
+function repeatInstruction(){
+  if(!session) return;
+
+  const text=instructionMarkup()
+    .replace(/<[^>]*>/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+
+  setPrompt(text.slice(0,170));
+}
+
+function restartSession(){
+  if(!session) return;
+
+  if(!confirm("Restart this session? Current progress will be discarded.")){
+    return;
+  }
+
+  createSession(practiceMode);
+}
+
+function finishSession(){
+  if(!session) return;
+
+  clearAllTimers();
+
+  const ended=Date.now();
+  const elapsed=Math.round((ended-session.start)/1000);
+  const avg=session.responseCount
+    ?Math.round(session.totalResponse/session.responseCount)
+    :0;
+
+  if(practiceMode){
+    session=null;
+    practiceMode=false;
+    showView("instructionView");
+    return;
+  }
+
+  const record={
+    id:session.id,
+    date:new Date(session.start).toISOString(),
+    game:GAME[session.game].title,
+    gameId:session.game,
+    mode:modeLabel(),
+    level:session.level,
+    duration:elapsed,
+    correct:session.correct,
+    errors:session.errors,
+    rounds:session.rounds,
+    bestLoad:session.bestLoad,
+    avgResponse:avg,
+    orientation:config.orientation
+  };
+
+  history.push(record);
+  saveHistory();
+
+  renderResults(record);
+  session=null;
+
+  showView("resultsView");
+}
+
+function renderResults(record){
+  $("resultTitle").textContent=record.game+" complete";
+
+  $("resultSubtitle").textContent=
+    `Level ${record.level} · ${record.mode}`+
+    (record.gameId==="spatial"
+      ?" · "+record.orientation.toUpperCase()
+      :"");
+
+  const total=record.correct+record.errors;
+  const accuracy=total
+    ?Math.round(100*record.correct/total)+"%"
+    :"—";
+
+  const minutes=Math.floor(record.duration/60);
+  const seconds=record.duration%60;
+
+  const tiles=[
+    ["Correct rounds / pairs",record.correct],
+    ["Errors",record.errors],
+    ["Accuracy",accuracy],
+    ["Best memory load",record.bestLoad||"—"],
+    ["Average response",record.avgResponse?record.avgResponse+" ms":"—"],
+    ["Elapsed time",`${minutes}:${String(seconds).padStart(2,"0")}`]
+  ];
+
+  $("resultGrid").innerHTML=tiles.map(([label,value])=>`
+    <div class="result-tile">
+      <span>${label}</span>
+      <strong>${value}</strong>
+    </div>
+  `).join("");
+
+  $("resultSummary").textContent=
+    `Completed ${record.rounds} training rounds at challenge level ${record.level}. `+
+    `Correct and error counts reflect the rules of this particular game mode. `+
+    `These results describe performance in this task and should be interpreted `+
+    `alongside clinical observation and other relevant information.`;
+}
+
+/* HISTORY */
+
+function renderHistory(){
+  const box=$("historyList");
+
+  if(!history.length){
+    box.innerHTML=
+      '<div class="empty">No saved sessions on this device yet.</div>';
+    return;
+  }
+
+  box.innerHTML=history.slice().reverse().map(record=>`
+    <div class="history-item">
+      <div>
+        <strong>${record.game}</strong>
+        <div style="color:var(--muted);margin-top:4px">
+          ${new Date(record.date).toLocaleString()}
+          · Level ${record.level}
+          · ${record.mode}
+        </div>
+      </div>
+      <div style="text-align:right;white-space:nowrap">
+        <strong>${record.correct} correct</strong>
+        <div style="color:var(--muted);margin-top:4px">
+          ${record.errors} errors
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+/* BUTTON EVENTS */
+
+$("levelRange").addEventListener("input",event=>{
+  $("levelValue").textContent=event.target.value;
+});
+
+document.querySelectorAll("[data-game]").forEach(button=>{
+  button.addEventListener("click",()=>{
+    setupGame(button.dataset.game);
+  });
+});
+
+$("setupBack").onclick=()=>showView("homeView");
+
+$("continueBtn").onclick=()=>{
+  readConfig();
+  showInstructions();
+};
+
+$("instructionBack").onclick=()=>{
+  showView("setupView");
+};
+
+$("practiceBtn").onclick=()=>{
+  readConfig();
+  config.level=Math.min(config.level,1);
+  config.duration=0;
+  createSession(true);
+};
+
+$("beginBtn").onclick=()=>{
+  readConfig();
+  createSession(false);
+};
+
+$("pauseBtn").onclick=pauseGame;
+$("restartBtn").onclick=restartSession;
+
+$("finishBtn").onclick=()=>{
+  if(confirm("Finish this session and save the results?")){
+    finishSession();
+  }
+};
+
+$("repeatPromptBtn").onclick=repeatInstruction;
+
+$("againBtn").onclick=()=>{
+  setupGame(selectedGame);
+};
+
+$("homeBtn").onclick=()=>{
+  showView("homeView");
+};
+
+$("historyBtn").onclick=()=>{
+  renderHistory();
+  showView("historyView");
+};
+
+$("historyBack").onclick=()=>{
+  showView("homeView");
+};
+
+$("clearHistoryBtn").onclick=()=>{
+  if(confirm("Delete all session history stored in this browser?")){
+    history=[];
+    saveHistory();
+    renderHistory();
+  }
+};
+
+window.addEventListener("beforeunload",event=>{
+  if(session){
+    event.preventDefault();
+    event.returnValue="";
+  }
+});
+
+})();
+</script>
+
+</body>
+</html>
