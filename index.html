@@ -1341,7 +1341,6 @@ function recognitionSelect(item,card){
   if(selectedIndex>=0){
     gameState.selected.splice(selectedIndex,1);
     card.classList.remove("revealed");
-    card.style.borderColor="";
     setFeedback(`${gameState.selected.length} items selected`);
     return;
   }
@@ -1349,18 +1348,15 @@ function recognitionSelect(item,card){
   gameState.selected.push(item.id);
   card.classList.add("revealed");
 
+  // Do not reveal whether an individual choice is correct.
+  // The patient should receive no red/green correctness cue until submission.
   const isTarget=gameState.learned.some(
     learned=>learned.id===item.id
   );
 
-  if(isTarget){
-    card.style.borderColor="var(--green)";
-    setFeedback("Previously studied item · selected","var(--green)");
-  }else{
-    card.style.borderColor="var(--red)";
-    gameState.falseSelections++;
-    setFeedback("New item · selected as an answer","var(--red)");
-  }
+  if(!isTarget) gameState.falseSelections++;
+
+  setFeedback(`${gameState.selected.length} items selected`);
   session.attempts++;
 }
 
